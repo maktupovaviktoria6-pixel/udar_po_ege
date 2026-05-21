@@ -1,0 +1,38 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <title>{{ title }}</title>
+    <style>
+        body { font-family: sans-serif; background: #f0f2f5; padding: 20px; text-align: center; }
+        .nav { margin-bottom: 30px; }
+        .nav a { text-decoration: none; color: #3498db; font-weight: bold; background: white; padding: 10px 20px; border-radius: 20px; margin: 0 5px; box-shadow: 0 2px 4px rgba(0,0,0,0.1); }
+        .word-box { background: white; padding: 15px; margin: 15px auto; width: fit-content; min-width: 200px; border-radius: 12px; box-shadow: 0 4px 6px rgba(0,0,0,0.05); font-size: 24px; }
+        .stress { color: #e74c3c; font-weight: bold; text-decoration: underline; }
+    </style>
+</head>
+<body>
+    <div class="nav">
+        <a href="/">← Тренажер</a>
+       
+        <a href="/learned/">Выучено</a>
+    </div>
+
+    <h1>{{ title }}</h1>
+
+    {% for item in items %}
+        <div class="word-box">
+            {% for letter in item.text %}
+                {% if forloop.counter0 == item.stress_index %}
+                    <span class="stress">{{ letter|upper }}</span>
+                {% else %}
+                    {{ letter|lower }}
+                {% endif %}
+            {% endfor %}
+        </div>
+    {% empty %}
+        <p>Здесь пока ничего нет </p>
+    {% endfor %}
+
+</body>
+</html>

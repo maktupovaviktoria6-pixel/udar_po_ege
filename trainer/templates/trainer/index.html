@@ -1,0 +1,129 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta charset="UTF-8">
+    <title>Уда́р по ЕГЭ</title>
+    <style>
+         body { font-family: sans-serif; text-align: center; background: #f4f4f9; padding: 20px; }
+    
+    .card { 
+        background: white; padding: 30px; border-radius: 15px; 
+        box-shadow: 0 4px 6px rgba(0,0,0,0.1); display: block; 
+        width: 90%; max-width: 450px; margin: 20px auto; 
+    }
+
+    .letter-btn, .letter-static {
+        font-size: clamp(28px, 10vw, 42px);
+        margin: 0 2px;
+        display: inline-block;
+        vertical-align: middle;
+        line-height: 1.2;
+        text-transform: lowercase;
+    }
+
+    .letter-btn {
+        padding: 5px 12px;
+        cursor: pointer;
+        border: 1px solid #ddd;
+        background: #fff;
+        border-radius: 8px;
+        transition: 0.3s;
+    }
+
+    .letter-btn:hover { background: #eee; }
+
+    .fav-btn { font-size: 30px; cursor: pointer; border: none; background: none; color: #ccc; }
+    .fav-btn.active { color: #e74c3c; }
+    #result { margin-top: 20px; font-size: 22px; min-height: 50px; }
+    .nav { margin-bottom: 20px; }
+    .nav a { margin: 0 10px; text-decoration: none; color: #3498db; font-weight: bold; }
+    button.next-btn { background: #3498db; color: white; border: none; padding: 10px 20px; border-radius: 5px; cursor: pointer; margin-top: 15px; }
+#word-container {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    align-items: center;
+    gap: 2px;
+}
+
+
+
+    </style>
+</head>
+<body>
+
+    <div class="nav">
+    <a href="/">Тренажер</a>
+    
+    <a href="/learned/">Выучено</a>
+</div>
+
+
+
+
+    <div class="card">
+        {% if all_done %}
+            <h2>🎉 Поздравляем!</h2>
+            <p>Ты выучил(а) все слова в базе!</p>
+        {% elif error %}
+            <p>{{ error }}</p>
+        {% else %}
+            <div style="text-align: right; display: flex; justify-content: space-between; align-items: center;">
+    <span style="color: #95a5a6; font-size: 14px;">Изучено: <b>{{ count }}</b> / 3</span>
+    
+    
+</div>
+
+
+            <p id="message">Где ударение?</p>
+            
+<div id="word-container" style="display: flex; flex-wrap: wrap; justify-content: center; gap: 2px;">
+    {% for letter in word.text %}
+        {% if letter|lower in "аеёиоуыэюя" %}
+            {% if "(" in word.text and forloop.counter0 > 5 %} 
+                <span class="letter-static">{{ letter }}</span>
+            {% else %}
+                <button class="letter-btn" onclick="checkAnswer(this, {{ forloop.counter0 }}, {{ word.stress_index }}, {{ word.id }}, '{{ word.text }}')">
+                    {{ letter }}
+                </button>
+            {% endif %}
+        {% elif letter == " " %}
+            <span style="width: 8px;"></span>
+        {% else %}
+            <span class="letter-static">{{ letter }}</span>
+        {% endif %}
+    {% endfor %}
+</div>
+            <div id="result"></div>
+        {% endif %}
+    </div>
+
+    <script>
+    let answered = false;
+
+    function checkAnswer(btn, clickedIndex, correctIndex, wordId, wordText) {
+        if (answered) return;
+        answered = true;
+
+        const resultDiv = document.getElementById('result');
+        const isCorrect = (clickedIndex === correctIndex);
+        
+        let formattedWord = wordText.substring(0, correctIndex) + wordText[correctIndex].toUpperCase() + wordText.substring(correctIndex + 1);
+
+        if (isCorrect) {
+            btn.style.background = "#2ecc71";
+            resultDiv.innerHTML = `<span style="color: green;">Верно!</span><br><b style="font-size:30px">${formattedWord}</b>`;
+            fetch(`/update_progress/${wordId}/`);
+        } else {
+            btn.style.background = "#e74c3c";
+            resultDiv.innerHTML = `<span style="color: red;">Ошибка!</span><br>Правильно: <b style="font-size:30px">${formattedWord}</b>`;
+        }
+
+        resultDiv.innerHTML += `<br><button class="next-btn" onclick="location.reload()">Следующее слово →</button>`;
+    }
+
+    
+    </script>
+</body>
+</html>
