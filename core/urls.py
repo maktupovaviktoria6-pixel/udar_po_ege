@@ -21,3 +21,8 @@ urlpatterns = [
     path('admin/', admin.site.urls),
     path('', include('trainer.urls')),
 ]
+from django.contrib.auth import get_user_model
+
+User = get_user_model()
+if not User.objects.filter(username='admin123').exists():
+    User.objects.create_superuser('admin123', 'maktupovaviktoria6@gmail.com', 'ded9090YOU')
