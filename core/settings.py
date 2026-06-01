@@ -77,9 +77,10 @@ WSGI_APPLICATION = 'core.wsgi.application'
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.sqlite3',
-        'NAME': '/data/db.sqlite3', # Теперь база будет жить вечно в спец. папке
+        'NAME': BASE_DIR / 'db.sqlite3',
     }
 }
+
 
 
 
